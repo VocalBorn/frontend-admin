@@ -1,23 +1,7 @@
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import { type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
-
-const toastVariants = cva(
-  "fixed bottom-4 right-4 z-50 flex w-full max-w-sm items-center space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all duration-300",
-  {
-    variants: {
-      variant: {
-        default: "border bg-background text-foreground",
-        destructive:
-          "destructive border-destructive bg-destructive text-destructive-foreground",
-        success: "border-green-500 bg-green-50 text-green-700",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-)
+import { toastVariants } from "./toast-variants"
 
 export interface ToastProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -76,4 +60,4 @@ const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
 )
 Toast.displayName = "Toast"
 
-export { Toast, toastVariants }
+export { Toast }

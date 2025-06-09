@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usersApi, getErrorMessage } from '@/lib/api';
 import { useToast } from '@/hooks/useToast';
 import type { UserResponse, UserListResponse, UserStatsResponse, UserRole } from '@/lib/api';
@@ -9,7 +9,7 @@ export const useUsers = () => {
   const [loading, setLoading] = useState(false);
   const { showError, showSuccess } = useToast();
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const response: UserListResponse = await usersApi.list();
@@ -19,16 +19,16 @@ export const useUsers = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError]);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const response: UserStatsResponse = await usersApi.stats();
       setStats(response);
     } catch (err) {
       showError(getErrorMessage(err));
     }
-  };
+  }, [showError]);
 
   const updateUserRole = async (userId: string, role: UserRole) => {
     try {
@@ -102,7 +102,7 @@ export const useUsers = () => {
   useEffect(() => {
     fetchUsers();
     fetchStats();
-  }, []);
+  }, [fetchUsers, fetchStats]);
 
   return {
     users,

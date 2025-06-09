@@ -1,9 +1,7 @@
-import React, { createContext, useState } from 'react';
+import React, { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Toast } from '@/components/ui/toast';
-import type { ToastData, ToastContextType } from '@/hooks/useToast';
-
-export const ToastContext = createContext<ToastContextType | undefined>(undefined);
+import { ToastContext, type ToastData } from '@/hooks/useToast';
 
 interface ToastProviderProps {
   children: ReactNode;

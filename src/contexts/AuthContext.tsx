@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import { authApi, getErrorMessage, type UserResponse } from '@/lib/api';
+import { AuthContext, type AuthContextType } from '@/hooks/useAuth';
 
 interface AuthState {
   user: UserResponse | null;
@@ -14,14 +15,6 @@ type AuthAction =
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'LOGOUT' }
   | { type: 'RESTORE_USER'; payload: UserResponse };
-
-interface AuthContextType extends AuthState {
-  login: (token: string, user?: UserResponse) => Promise<void>;
-  logout: () => void;
-  refetchUser: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // LocalStorage 鍵名
 const USER_STORAGE_KEY = 'vocalborn_user';
@@ -196,12 +189,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };
