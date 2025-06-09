@@ -102,13 +102,13 @@ const UserDetailsDialog = ({ user, open, onOpenChange, onRoleChange }: UserDetai
               <div className="grid grid-cols-1 gap-4">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">用戶 ID</label>
-                  <div className="text-base font-mono text-xs bg-muted p-2 rounded">
+                  <div className="font-mono text-xs bg-muted p-2 rounded">
                     {user.user_id}
                   </div>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">帳戶 ID</label>
-                  <div className="text-base font-mono text-xs bg-muted p-2 rounded">
+                  <div className="font-mono text-xs bg-muted p-2 rounded">
                     {user.account_id}
                   </div>
                 </div>
