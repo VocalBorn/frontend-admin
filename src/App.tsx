@@ -5,36 +5,39 @@ import CoursesPage from './pages/courses'
 import UsersPage from './pages/users'
 import ProfilePage from './pages/profile'
 import ProtectedRoute from './components/ProtectedRoute'
+import { ToastProvider } from './contexts/ToastContext'
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/courses" element={
-          <ProtectedRoute>
-            <CoursesPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/users" element={
-          <ProtectedRoute>
-            <UsersPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/profile" element={
-          <ProtectedRoute>
-            <ProfilePage />
-          </ProtectedRoute>
-        } />
-        {/* 將根路徑重定向到儀表板，如果未登入會被重定向到登入頁 */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <ToastProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/courses" element={
+            <ProtectedRoute>
+              <CoursesPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/users" element={
+            <ProtectedRoute>
+              <UsersPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          } />
+          {/* 將根路徑重定向到儀表板，如果未登入會被重定向到登入頁 */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </ToastProvider>
   )
 }
 
