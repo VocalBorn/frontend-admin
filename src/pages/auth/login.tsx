@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
@@ -10,13 +10,27 @@ import { useAuth } from "@/hooks/useAuth";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, error: authError, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // 如果已經認證成功，重定向到 dashboard
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
+
+  // 顯示來自 AuthContext 的錯誤訊息
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+    }
+  }, [authError]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,10 +47,12 @@ const LoginPage = () => {
 
     try {
       const response = await authApi.login(formData);
-      // 使用 AuthContext 的 login 方法
+      // 使用 AuthContext 的 login 方法，這會檢查權限
       await login(response.access_token);
-      // 導航到主頁
-      navigate("/dashboard");
+      
+      // 注意：不在這裡直接導航，因為如果權限檢查失敗，
+      // login 方法會設置錯誤狀態而不會設置 isAuthenticated = true
+      // 導航會由 useEffect 處理（當 isAuthenticated 變為 true 時）
     } catch (err) {
       const error = err as AxiosError<{ detail: Array<{ msg: string }> }>;
       setError(error.response?.data?.detail?.[0]?.msg || "登入失敗，請稍後再試");

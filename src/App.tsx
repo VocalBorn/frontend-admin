@@ -4,7 +4,7 @@ import DashboardPage from './pages/dashboard'
 import CoursesPage from './pages/courses'
 import UsersPage from './pages/users'
 import ProfilePage from './pages/profile'
-import ProtectedRoute from './components/ProtectedRoute'
+import AdminRoute from './components/AdminRoute'
 import { ToastProvider } from './contexts/ToastContext'
 import { AuthProvider } from './contexts/AuthContext'
 
@@ -16,24 +16,24 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/dashboard" element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <DashboardPage />
-              </ProtectedRoute>
+              </AdminRoute>
             } />
             <Route path="/courses" element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <CoursesPage />
-              </ProtectedRoute>
+              </AdminRoute>
             } />
             <Route path="/users" element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <UsersPage />
-              </ProtectedRoute>
+              </AdminRoute>
             } />
             <Route path="/profile" element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <ProfilePage />
-              </ProtectedRoute>
+              </AdminRoute>
             } />
             {/* 將根路徑重定向到儀表板，如果未登入會被重定向到登入頁 */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />

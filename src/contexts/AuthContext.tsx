@@ -100,13 +100,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      // 如果有快取的使用者資訊，先顯示快取的資料
+      // 如果有快取的使用者資訊，先檢查權限
       if (cachedUser) {
+        // 檢查快取的使用者是否為管理員
+        if (cachedUser.role !== 'admin') {
+          console.warn('Cached non-admin user found, clearing auth data');
+          clearUserFromStorage();
+          dispatch({ type: 'SET_ERROR', payload: '此系統僅限管理員使用，您的權限不足' });
+          return;
+        }
+        
         dispatch({ type: 'RESTORE_USER', payload: cachedUser });
         
         // 在背景中驗證 token 是否仍然有效
         try {
           const currentUser = await authApi.getCurrentUser();
+          
+          // 檢查 API 回傳的使用者是否仍為管理員
+          if (currentUser.role !== 'admin') {
+            console.warn('User role changed to non-admin, logging out');
+            clearUserFromStorage();
+            dispatch({ type: 'SET_ERROR', payload: '您的權限已變更，請重新登入' });
+            return;
+          }
+          
           // 如果 API 回傳的資料與快取不同，更新快取
           if (JSON.stringify(currentUser) !== JSON.stringify(cachedUser)) {
             saveUserToStorage(currentUser);
@@ -123,6 +140,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           dispatch({ type: 'SET_LOADING', payload: true });
           const currentUser = await authApi.getCurrentUser();
+          
+          // 檢查使用者是否為管理員
+          if (currentUser.role !== 'admin') {
+            console.warn('Non-admin user attempted to access admin system during initialization');
+            clearUserFromStorage();
+            dispatch({ type: 'SET_ERROR', payload: '此系統僅限管理員使用，您的權限不足' });
+            return;
+          }
+          
           saveUserToStorage(currentUser);
           dispatch({ type: 'SET_USER', payload: currentUser });
         } catch (error) {
@@ -139,22 +165,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (token: string, user?: UserResponse) => {
     localStorage.setItem(TOKEN_STORAGE_KEY, token);
     
+    let userToCheck: UserResponse;
+    
     if (user) {
       // 如果登入時已經提供了使用者資訊，直接使用
-      saveUserToStorage(user);
-      dispatch({ type: 'SET_USER', payload: user });
+      userToCheck = user;
     } else {
       // 否則呼叫 API 獲取使用者資訊
       try {
         dispatch({ type: 'SET_LOADING', payload: true });
-        const currentUser = await authApi.getCurrentUser();
-        saveUserToStorage(currentUser);
-        dispatch({ type: 'SET_USER', payload: currentUser });
+        userToCheck = await authApi.getCurrentUser();
       } catch (error) {
         console.error('Failed to fetch user after login:', error);
+        clearUserFromStorage();
         dispatch({ type: 'SET_ERROR', payload: getErrorMessage(error) });
+        return;
       }
     }
+    
+    // 檢查使用者是否為管理員
+    if (userToCheck.role !== 'admin') {
+      console.warn('Non-admin user attempted to access admin system:', userToCheck.role);
+      clearUserFromStorage();
+      dispatch({ type: 'SET_ERROR', payload: '此系統僅限管理員使用，您的權限不足' });
+      return;
+    }
+    
+    // 只有管理員才能成功登入
+    saveUserToStorage(userToCheck);
+    dispatch({ type: 'SET_USER', payload: userToCheck });
   };
 
   const logout = () => {
