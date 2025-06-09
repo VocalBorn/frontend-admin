@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { usersApi } from '@/lib/api';
+import { usersApi, getErrorMessage } from '@/lib/api';
 import { useToast } from '@/hooks/useToast';
 import type { UserResponse, UserListResponse, UserStatsResponse, UserRole } from '@/lib/api';
 
@@ -15,7 +15,7 @@ export const useUsers = () => {
       const response: UserListResponse = await usersApi.list();
       setUsers(response.users);
     } catch (err) {
-      showError(err instanceof Error ? err.message : '載入用戶列表失敗');
+      showError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -26,7 +26,7 @@ export const useUsers = () => {
       const response: UserStatsResponse = await usersApi.stats();
       setStats(response);
     } catch (err) {
-      showError(err instanceof Error ? err.message : '載入統計資訊失敗');
+      showError(getErrorMessage(err));
     }
   };
 
@@ -43,7 +43,7 @@ export const useUsers = () => {
       showSuccess('用戶角色更新成功');
       return updatedUser;
     } catch (err) {
-      showError(err instanceof Error ? err.message : '更新用戶角色失敗');
+      showError(getErrorMessage(err));
       throw err;
     }
   };
@@ -60,7 +60,7 @@ export const useUsers = () => {
       showSuccess('成功提升為語言治療師');
       return updatedUser;
     } catch (err) {
-      showError(err instanceof Error ? err.message : '提升為語言治療師失敗');
+      showError(getErrorMessage(err));
       throw err;
     }
   };
@@ -77,7 +77,7 @@ export const useUsers = () => {
       showSuccess('成功提升為管理員');
       return updatedUser;
     } catch (err) {
-      showError(err instanceof Error ? err.message : '提升為管理員失敗');
+      showError(getErrorMessage(err));
       throw err;
     }
   };
@@ -94,7 +94,7 @@ export const useUsers = () => {
       showSuccess('成功降級為一般用戶');
       return updatedUser;
     } catch (err) {
-      showError(err instanceof Error ? err.message : '降級為一般用戶失敗');
+      showError(getErrorMessage(err));
       throw err;
     }
   };

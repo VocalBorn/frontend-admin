@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { authApi, type UserResponse } from '@/lib/api';
+import { authApi, getErrorMessage, type UserResponse } from '@/lib/api';
 
 export interface AuthState {
   user: UserResponse | null;
@@ -38,7 +38,7 @@ export const useAuth = () => {
       setAuthState({
         user: null,
         isLoading: false,
-        error: '無法取得使用者資訊',
+        error: getErrorMessage(error),
       });
       // 如果 token 無效，清除 localStorage
       localStorage.removeItem('token');
