@@ -6,9 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authApi } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,8 +33,8 @@ const LoginPage = () => {
 
     try {
       const response = await authApi.login(formData);
-      // 儲存 token
-      localStorage.setItem("token", response.access_token);
+      // 使用 AuthContext 的 login 方法
+      await login(response.access_token);
       // 導航到主頁
       navigate("/dashboard");
     } catch (err) {
