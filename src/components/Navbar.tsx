@@ -28,7 +28,7 @@ export default function Navbar() {
             className="flex items-center space-x-2 text-sm font-medium transition-colors hover:text-primary"
           >
             <Book className="h-4 w-4" />
-            <span>課程管理</span>
+            <span className="hidden md:inline">課程管理</span>
           </Link>
 
           {/* 使用者管理 */}
@@ -37,7 +37,7 @@ export default function Navbar() {
             className="flex items-center space-x-2 text-sm font-medium transition-colors hover:text-primary"
           >
             <Users className="h-4 w-4" />
-            <span>使用者管理</span>
+            <span className="hidden md:inline">使用者管理</span>
           </Link>
 
           {/* 個人資料選單 */}
