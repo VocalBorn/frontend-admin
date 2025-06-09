@@ -13,7 +13,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastData[]>([]);
 
   const addToast = (toast: Omit<ToastData, 'id'>) => {
-    const id = Math.random().toString(36).substr(2, 9);
+    const id = Math.random().toString(36).slice(2, 11);
     const newToast = { ...toast, id };
     setToasts(prev => [...prev, newToast]);
   };
@@ -41,7 +41,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   return (
     <ToastContext.Provider value={{ toasts, addToast, removeToast, showError, showSuccess }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 space-y-2">
+      <div className="fixed top-4 right-4 z-50 space-y-2">
         {toasts.map(toast => (
           <Toast
             key={toast.id}
