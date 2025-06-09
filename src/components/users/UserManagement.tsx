@@ -9,7 +9,7 @@ import UserDetailsDialog from './UserDetailsDialog';
 import type { UserResponse, UserRole } from '@/lib/api';
 
 const UserManagement = () => {
-  const { users, stats, loading, error, updateUserRole, promoteToTherapist, promoteToAdmin, demoteToClient } = useUsers();
+  const { users, stats, loading, error, updateUserRole } = useUsers();
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null);
   const [showUserDetails, setShowUserDetails] = useState(false);
@@ -46,39 +46,6 @@ const UserManagement = () => {
       await updateUserRole(userId, newRole);
     } catch (error) {
       console.error('更新角色失敗:', error);
-    } finally {
-      setUpdatingUserId(null);
-    }
-  };
-
-  const handlePromoteToTherapist = async (userId: string) => {
-    try {
-      setUpdatingUserId(userId);
-      await promoteToTherapist(userId);
-    } catch (error) {
-      console.error('提升為語言治療師失敗:', error);
-    } finally {
-      setUpdatingUserId(null);
-    }
-  };
-
-  const handlePromoteToAdmin = async (userId: string) => {
-    try {
-      setUpdatingUserId(userId);
-      await promoteToAdmin(userId);
-    } catch (error) {
-      console.error('提升為管理員失敗:', error);
-    } finally {
-      setUpdatingUserId(null);
-    }
-  };
-
-  const handleDemoteToClient = async (userId: string) => {
-    try {
-      setUpdatingUserId(userId);
-      await demoteToClient(userId);
-    } catch (error) {
-      console.error('降級為一般用戶失敗:', error);
     } finally {
       setUpdatingUserId(null);
     }
@@ -197,7 +164,7 @@ const UserManagement = () => {
                   </TableCell>
                   <TableCell>{formatDate(user.created_at)}</TableCell>
                   <TableCell>
-                    <DropdownMenu>
+                    {/* <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button 
                           variant="outline" 
@@ -211,32 +178,14 @@ const UserManagement = () => {
                         <DropdownMenuItem onClick={() => handleViewUserDetails(user)}>
                           查看詳情
                         </DropdownMenuItem>
-                        {user.role !== 'admin' && (
-                          <DropdownMenuItem onClick={() => handlePromoteToAdmin(user.user_id)}>
-                            提升為管理員
-                          </DropdownMenuItem>
-                        )}
-                        {user.role !== 'therapist' && (
-                          <DropdownMenuItem onClick={() => handlePromoteToTherapist(user.user_id)}>
-                            提升為語言治療師
-                          </DropdownMenuItem>
-                        )}
-                        {user.role !== 'client' && (
-                          <DropdownMenuItem onClick={() => handleDemoteToClient(user.user_id)}>
-                            降級為一般用戶
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem onClick={() => handleRoleChange(user.user_id, 'admin')}>
-                          設為管理員
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleRoleChange(user.user_id, 'therapist')}>
-                          設為語言治療師
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleRoleChange(user.user_id, 'client')}>
-                          設為一般用戶
-                        </DropdownMenuItem>
                       </DropdownMenuContent>
-                    </DropdownMenu>
+                    </DropdownMenu> */}
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleViewUserDetails(user)}
+                      disabled={updatingUserId === user.user_id}
+                    >管理</Button>
                   </TableCell>
                 </TableRow>
               ))}
