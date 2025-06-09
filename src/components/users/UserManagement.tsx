@@ -3,13 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useUsers } from '@/hooks/useUsers';
 import UserDetailsDialog from './UserDetailsDialog';
 import type { UserResponse, UserRole } from '@/lib/api';
 
 const UserManagement = () => {
-  const { users, stats, loading, error, updateUserRole } = useUsers();
+  const { users, stats, loading, updateUserRole } = useUsers();
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null);
   const [showUserDetails, setShowUserDetails] = useState(false);
@@ -80,14 +79,6 @@ const UserManagement = () => {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-lg">載入中...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-lg text-red-500">錯誤: {error}</div>
       </div>
     );
   }
@@ -164,22 +155,6 @@ const UserManagement = () => {
                   </TableCell>
                   <TableCell>{formatDate(user.created_at)}</TableCell>
                   <TableCell>
-                    {/* <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          disabled={updatingUserId === user.user_id}
-                        >
-                          {updatingUserId === user.user_id ? '更新中...' : '管理'}
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => handleViewUserDetails(user)}>
-                          查看詳情
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu> */}
                     <Button 
                       variant="outline" 
                       size="sm"
