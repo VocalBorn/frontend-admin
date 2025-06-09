@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserCircle, Book, Users, LogOut, Settings } from "lucide-react";
 import {
   DropdownMenu,
@@ -7,11 +7,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Navbar() {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
   const handleLogout = () => {
-    // TODO: 實作登出功能
-    console.log("登出");
+    logout();
+    navigate("/login");
+  };
+
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return '管理員';
+      case 'therapist':
+        return '語言治療師';
+      case 'client':
+        return '一般用戶';
+      default:
+        return role;
+    }
   };
 
   return (
@@ -44,8 +61,24 @@ export default function Navbar() {
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center space-x-2 hover:text-primary">
               <UserCircle className="h-6 w-6" />
+              {user && (
+                <div className="hidden sm:flex flex-col items-start">
+                  <span className="text-sm font-medium">{user.name}</span>
+                  <span className="text-xs text-muted-foreground">{getRoleDisplayName(user.role)}</span>
+                </div>
+              )}
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-48">
+              {user && (
+                <>
+                  <div className="px-2 py-1.5">
+                    <p className="text-sm font-medium">{user.name}</p>
+                    <p className="text-xs text-muted-foreground">{user.account_id}</p>
+                    <p className="text-xs text-muted-foreground">{getRoleDisplayName(user.role)}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuItem asChild>
                 <Link to="/profile" className="flex items-center">
                   <Settings className="mr-2 h-4 w-4" />

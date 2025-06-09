@@ -83,6 +83,12 @@ export const authApi = {
     const response = await api.post<LoginResponse>('/user/login', data);
     return response.data;
   },
+
+  // 取得當前登入使用者資訊
+  getCurrentUser: async (): Promise<UserResponse> => {
+    const response = await api.get<UserResponse>('/user/profile');
+    return response.data;
+  },
 };
 
 export const situationsApi = {
