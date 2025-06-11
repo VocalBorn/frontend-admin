@@ -52,7 +52,7 @@ const DeleteUserDialog = ({ user, open, onOpenChange, onConfirm }: DeleteUserDia
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="w-full h-full max-w-none max-h-none m-0 rounded-none sm:w-3/4 sm:h-auto sm:max-w-md sm:max-h-[90vh] sm:m-6 sm:rounded-lg overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-red-600">
             <AlertTriangle className="h-5 w-5" />

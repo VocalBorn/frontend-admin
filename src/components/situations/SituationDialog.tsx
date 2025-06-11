@@ -59,7 +59,7 @@ export function SituationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="w-full h-full max-w-none max-h-none m-0 rounded-none sm:w-3/4 sm:h-auto sm:max-w-lg sm:max-h-[90vh] sm:m-6 sm:rounded-lg overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{mode === "create" ? "新增情境" : "編輯情境"}</DialogTitle>
         </DialogHeader>

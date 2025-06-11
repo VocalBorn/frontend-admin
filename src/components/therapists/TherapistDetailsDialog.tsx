@@ -51,7 +51,7 @@ const TherapistDetailsDialog = ({ therapist, open, onOpenChange }: TherapistDeta
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full h-full max-w-none max-h-none m-0 rounded-none sm:w-3/4 sm:h-auto sm:max-w-2xl sm:max-h-[90vh] sm:m-6 sm:rounded-lg overflow-y-auto">
         <DialogHeader>
           <DialogTitle>治療師詳情</DialogTitle>
         </DialogHeader>
