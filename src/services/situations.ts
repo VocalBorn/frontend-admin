@@ -4,7 +4,7 @@ import {
   type SituationUpdate, 
   type SituationResponse, 
   type SituationListResponse 
-} from "@/lib/api";
+} from "@/lib/situations-api";
 
 export class SituationService {
   async list(params?: { skip?: number; limit?: number; search?: string }): Promise<SituationListResponse> {

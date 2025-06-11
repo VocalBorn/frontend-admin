@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   therapistApi, 
   type UserWithProfileResponse, 
@@ -17,7 +17,7 @@ export const useTherapists = () => {
   const [loading, setLoading] = useState(true);
   const { showError, showSuccess } = useToast();
 
-  const fetchTherapists = async () => {
+  const fetchTherapists = useCallback(async () => {
     try {
       setLoading(true);
       const data = await therapistApi.getAllTherapists();
@@ -27,11 +27,11 @@ export const useTherapists = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError]);
 
   useEffect(() => {
     fetchTherapists();
-  }, []);
+  }, [fetchTherapists]);
 
   const applyToBeTherapist = async (data: TherapistApplicationRequest) => {
     try {
@@ -93,7 +93,7 @@ export const useTherapistProfile = (userId?: string) => {
   const [loading, setLoading] = useState(false);
   const { showError } = useToast();
 
-  const fetchProfile = async (targetUserId?: string) => {
+  const fetchProfile = useCallback(async (targetUserId?: string) => {
     if (!targetUserId && !userId) return;
     
     try {
@@ -107,13 +107,13 @@ export const useTherapistProfile = (userId?: string) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId, showError]);
 
   useEffect(() => {
     if (userId) {
       fetchProfile();
     }
-  }, [userId]);
+  }, [userId, fetchProfile]);
 
   return {
     profile,
@@ -127,7 +127,7 @@ export const useTherapistClients = () => {
   const [loading, setLoading] = useState(true);
   const { showError, showSuccess } = useToast();
 
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async () => {
     try {
       setLoading(true);
       const data = await therapistApi.getMyClients();
@@ -137,11 +137,11 @@ export const useTherapistClients = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError]);
 
   useEffect(() => {
     fetchClients();
-  }, []);
+  }, [fetchClients]);
 
   const assignClient = async (data: TherapistClientCreate) => {
     try {

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage from './pages/auth/login'
 import DashboardPage from './pages/dashboard'
 import CoursesPage from './pages/courses'
+import ChapterManagementPage from './pages/chapters'
 import UsersPage from './pages/users'
 import ProfilePage from './pages/profile'
 import AdminRoute from './components/AdminRoute'
@@ -23,6 +24,11 @@ function App() {
             <Route path="/courses" element={
               <AdminRoute>
                 <CoursesPage />
+              </AdminRoute>
+            } />
+            <Route path="/chapters/:situationId" element={
+              <AdminRoute>
+                <ChapterManagementPage />
               </AdminRoute>
             } />
             <Route path="/users" element={
