@@ -99,6 +99,18 @@ export const useUsers = () => {
     }
   };
 
+  const deleteUser = async (userId: string, adminPassword: string) => {
+    try {
+      await usersApi.deleteUser(userId, { password: adminPassword });
+      setUsers(prev => prev.filter(user => user.user_id !== userId));
+      await fetchStats();
+      showSuccess('用戶已成功刪除');
+    } catch (err) {
+      showError(getErrorMessage(err));
+      throw err;
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
     fetchStats();
@@ -113,5 +125,6 @@ export const useUsers = () => {
     promoteToTherapist,
     promoteToAdmin,
     demoteToClient,
+    deleteUser,
   };
 };

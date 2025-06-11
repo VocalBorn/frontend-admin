@@ -31,6 +31,10 @@ export interface UpdateUserRoleRequest {
   role: UserRole;
 }
 
+export interface DeleteUserRequest {
+  password: string;
+}
+
 // Response 介面定義
 export interface LoginResponse {
   access_token: string;
@@ -163,6 +167,12 @@ export const usersApi = {
   // 降級用戶為一般用戶
   demoteToClient: async (userId: string): Promise<UserResponse> => {
     const response = await api.post<UserResponse>(`/admin/users/${userId}/demote-to-client`);
+    return response.data;
+  },
+
+  // 刪除用戶
+  deleteUser: async (userId: string, data: DeleteUserRequest): Promise<UserResponse> => {
+    const response = await api.delete<UserResponse>(`/admin/users/${userId}`, { data });
     return response.data;
   },
 };

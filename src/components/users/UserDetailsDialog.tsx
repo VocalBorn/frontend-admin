@@ -9,9 +9,10 @@ interface UserDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onRoleChange?: (userId: string, role: 'admin' | 'therapist' | 'client') => void;
+  onDeleteUser?: (userId: string) => void;
 }
 
-const UserDetailsDialog = ({ user, open, onOpenChange, onRoleChange }: UserDetailsDialogProps) => {
+const UserDetailsDialog = ({ user, open, onOpenChange, onRoleChange, onDeleteUser }: UserDetailsDialogProps) => {
   if (!user) return null;
 
   const getRoleBadgeVariant = (role: string) => {
@@ -166,6 +167,29 @@ const UserDetailsDialog = ({ user, open, onOpenChange, onRoleChange }: UserDetai
                       </Button>
                     )}
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 危險操作區域 */}
+          {onDeleteUser && (
+            <Card className="border-red-200">
+              <CardHeader>
+                <CardTitle className="text-lg text-red-600">危險操作</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    刪除此用戶帳號將無法復原，請謹慎操作
+                  </p>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => onDeleteUser(user.user_id)}
+                  >
+                    刪除用戶帳號
+                  </Button>
                 </div>
               </CardContent>
             </Card>

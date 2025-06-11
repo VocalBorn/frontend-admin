@@ -7,12 +7,13 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useUsers } from '@/hooks/useUsers';
 import { useTherapists } from '@/hooks/useTherapists';
 import UserDetailsDialog from './UserDetailsDialog';
+import DeleteUserDialog from './DeleteUserDialog';
 import TherapistDetailsDialog from '../therapists/TherapistDetailsDialog';
 import type { UserResponse, UserRole } from '@/lib/api';
 import type { UserWithProfileResponse } from '@/lib/therapist-api';
 
 const UserManagement = () => {
-  const { users, stats, loading: usersLoading, updateUserRole } = useUsers();
+  const { users, stats, loading: usersLoading, updateUserRole, deleteUser } = useUsers();
   const { therapists, loading: therapistsLoading } = useTherapists();
   
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
@@ -20,6 +21,8 @@ const UserManagement = () => {
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [selectedTherapist, setSelectedTherapist] = useState<UserWithProfileResponse | null>(null);
   const [showTherapistDetails, setShowTherapistDetails] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<UserResponse | null>(null);
 
   const getRoleBadgeVariant = (role: UserRole | string) => {
     switch (role) {
@@ -76,6 +79,40 @@ const UserManagement = () => {
   const handleCloseTherapistDetails = () => {
     setShowTherapistDetails(false);
     setSelectedTherapist(null);
+  };
+
+  const handleDeleteUser = (userId: string) => {
+    const user = users.find(u => u.user_id === userId);
+    if (user) {
+      setUserToDelete(user);
+      setShowDeleteDialog(true);
+    }
+  };
+
+  const handleConfirmDelete = async (userId: string, password: string) => {
+    try {
+      await deleteUser(userId, password);
+      setShowDeleteDialog(false);
+      setUserToDelete(null);
+      // 如果刪除的是當前查看的用戶，關閉詳情對話框
+      if (selectedUser?.user_id === userId) {
+        handleCloseUserDetails();
+      }
+    } catch (error) {
+      // 刪除失敗時也關閉相關的對話框
+      setShowDeleteDialog(false);
+      setUserToDelete(null);
+      if (selectedUser?.user_id === userId) {
+        handleCloseUserDetails();
+      }
+      // 重新拋出錯誤讓 DeleteUserDialog 處理
+      throw error;
+    }
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setShowDeleteDialog(false);
+    setUserToDelete(null);
   };
 
   const handleRoleChangeFromDialog = async (userId: string, newRole: UserRole) => {
@@ -293,6 +330,15 @@ const UserManagement = () => {
         open={showUserDetails}
         onOpenChange={handleCloseUserDetails}
         onRoleChange={handleRoleChangeFromDialog}
+        onDeleteUser={handleDeleteUser}
+      />
+
+      {/* 刪除用戶確認對話框 */}
+      <DeleteUserDialog
+        user={userToDelete}
+        open={showDeleteDialog}
+        onOpenChange={handleCloseDeleteDialog}
+        onConfirm={handleConfirmDelete}
       />
 
       {/* 治療師詳情對話框 */}
