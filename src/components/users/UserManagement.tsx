@@ -103,9 +103,9 @@ const UserManagement = () => {
 
   const getProfileStatusBadge = (therapist: UserWithProfileResponse) => {
     if (therapist.therapist_profile) {
-      return <Badge variant="default">已建立檔案</Badge>;
+      return <Badge variant="default" className="whitespace-nowrap">已建立檔案</Badge>;
     }
-    return <Badge variant="secondary">未建立檔案</Badge>;
+    return <Badge variant="secondary" className="whitespace-nowrap">未建立檔案</Badge>;
   };
 
   if (usersLoading || therapistsLoading) {
@@ -169,45 +169,47 @@ const UserManagement = () => {
               <CardTitle>用戶列表</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>姓名</TableHead>
-                    <TableHead>性別</TableHead>
-                    <TableHead>年齡</TableHead>
-                    <TableHead>電話</TableHead>
-                    <TableHead>角色</TableHead>
-                    <TableHead>註冊時間</TableHead>
-                    <TableHead>操作</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.map((user: UserResponse) => (
-                    <TableRow key={user.user_id}>
-                      <TableCell className="font-medium">{user.name}</TableCell>
-                      <TableCell>{user.gender || '-'}</TableCell>
-                      <TableCell>{user.age || '-'}</TableCell>
-                      <TableCell>{user.phone || '-'}</TableCell>
-                      <TableCell>
-                        <Badge variant={getRoleBadgeVariant(user.role)}>
-                          {getRoleDisplayName(user.role)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{formatDate(user.created_at)}</TableCell>
-                      <TableCell>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleViewUserDetails(user)}
-                          disabled={updatingUserId === user.user_id}
-                        >
-                          管理
-                        </Button>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[100px]">姓名</TableHead>
+                      <TableHead className="min-w-[60px] hidden sm:table-cell">性別</TableHead>
+                      <TableHead className="min-w-[60px] hidden md:table-cell">年齡</TableHead>
+                      <TableHead className="min-w-[120px] hidden lg:table-cell">電話</TableHead>
+                      <TableHead className="min-w-[100px]">角色</TableHead>
+                      <TableHead className="min-w-[140px] hidden xl:table-cell">註冊時間</TableHead>
+                      <TableHead className="min-w-[80px]">操作</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {users.map((user: UserResponse) => (
+                      <TableRow key={user.user_id}>
+                        <TableCell className="font-medium">{user.name}</TableCell>
+                        <TableCell className="hidden sm:table-cell">{user.gender || '-'}</TableCell>
+                        <TableCell className="hidden md:table-cell">{user.age || '-'}</TableCell>
+                        <TableCell className="hidden lg:table-cell">{user.phone || '-'}</TableCell>
+                        <TableCell>
+                          <Badge variant={getRoleBadgeVariant(user.role)} className="whitespace-nowrap">
+                            {getRoleDisplayName(user.role)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="hidden xl:table-cell">{formatDate(user.created_at)}</TableCell>
+                        <TableCell>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleViewUserDetails(user)}
+                            disabled={updatingUserId === user.user_id}
+                          >
+                            管理
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
               {users.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
                   沒有找到用戶資料
@@ -219,88 +221,61 @@ const UserManagement = () => {
 
         <TabsContent value="therapists">
           <div className="space-y-4">
-            {/* 治療師統計 */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">總治療師數</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{therapists.length}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">已建立檔案</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {therapists.filter(t => t.therapist_profile).length}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">未建立檔案</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {therapists.filter(t => !t.therapist_profile).length}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
             {/* 治療師列表 */}
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                 <CardTitle>治療師列表</CardTitle>
+                <h2 className="text-muted-foreground">
+                  已建立檔案 {therapists.filter(t => t.therapist_profile).length}/{therapists.length}
+                </h2>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>姓名</TableHead>
-                      <TableHead>性別</TableHead>
-                      <TableHead>年齡</TableHead>
-                      <TableHead>電話</TableHead>
-                      <TableHead>專業領域</TableHead>
-                      <TableHead>執照號碼</TableHead>
-                      <TableHead>檔案狀態</TableHead>
-                      <TableHead>註冊時間</TableHead>
-                      <TableHead>操作</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {therapists.map((therapist: UserWithProfileResponse) => (
-                      <TableRow key={therapist.user_id}>
-                        <TableCell className="font-medium">{therapist.name}</TableCell>
-                        <TableCell>{therapist.gender || '-'}</TableCell>
-                        <TableCell>{therapist.age || '-'}</TableCell>
-                        <TableCell>{therapist.phone || '-'}</TableCell>
-                        <TableCell>
-                          {therapist.therapist_profile?.specialization || '-'}
-                        </TableCell>
-                        <TableCell>
-                          {therapist.therapist_profile?.license_number || '-'}
-                        </TableCell>
-                        <TableCell>
-                          {getProfileStatusBadge(therapist)}
-                        </TableCell>
-                        <TableCell>{formatDateShort(therapist.created_at)}</TableCell>
-                        <TableCell>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleViewTherapistDetails(therapist)}
-                          >
-                            查看詳情
-                          </Button>
-                        </TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="min-w-[100px]">姓名</TableHead>
+                        <TableHead className="min-w-[60px] hidden sm:table-cell">性別</TableHead>
+                        <TableHead className="min-w-[60px] hidden md:table-cell">年齡</TableHead>
+                        <TableHead className="min-w-[120px] hidden lg:table-cell">電話</TableHead>
+                        <TableHead className="min-w-[120px] hidden xl:table-cell">專業領域</TableHead>
+                        <TableHead className="min-w-[120px] hidden 2xl:table-cell">執照號碼</TableHead>
+                        <TableHead className="min-w-[100px]">檔案狀態</TableHead>
+                        <TableHead className="min-w-[100px] hidden lg:table-cell">註冊時間</TableHead>
+                        <TableHead className="min-w-[80px]">操作</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {therapists.map((therapist: UserWithProfileResponse) => (
+                        <TableRow key={therapist.user_id}>
+                          <TableCell className="font-medium">{therapist.name}</TableCell>
+                          <TableCell className="hidden sm:table-cell">{therapist.gender || '-'}</TableCell>
+                          <TableCell className="hidden md:table-cell">{therapist.age || '-'}</TableCell>
+                          <TableCell className="hidden lg:table-cell">{therapist.phone || '-'}</TableCell>
+                          <TableCell className="hidden xl:table-cell">
+                            {therapist.therapist_profile?.specialization || '-'}
+                          </TableCell>
+                          <TableCell className="hidden 2xl:table-cell">
+                            {therapist.therapist_profile?.license_number || '-'}
+                          </TableCell>
+                          <TableCell>
+                            {getProfileStatusBadge(therapist)}
+                          </TableCell>
+                          <TableCell className="hidden lg:table-cell">{formatDateShort(therapist.created_at)}</TableCell>
+                          <TableCell>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleViewTherapistDetails(therapist)}
+                            >
+                              詳情
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
                 {therapists.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     沒有找到治療師資料
