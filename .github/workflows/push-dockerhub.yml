@@ -27,5 +27,5 @@ jobs:
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push sindy0514/vocalborn-backend:latest
-          docker push sindy0514/vocalborn-backend:${{ github.sha }}
+          docker push sindy0514/vocalborn-frontend-admin:latest
+          docker push sindy0514/vocalborn-frontend-admin:${{ github.sha }}
