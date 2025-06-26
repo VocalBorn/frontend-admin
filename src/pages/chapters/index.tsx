@@ -131,7 +131,7 @@ const ChapterManagementPage = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate("/courses")}
+            onClick={() => navigate("/admin/courses")}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             返回課程列表

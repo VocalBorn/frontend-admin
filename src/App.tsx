@@ -15,34 +15,36 @@ function App() {
       <ToastProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/dashboard" element={
-              <AdminRoute>
-                <DashboardPage />
-              </AdminRoute>
-            } />
-            <Route path="/courses" element={
-              <AdminRoute>
-                <CoursesPage />
-              </AdminRoute>
-            } />
-            <Route path="/chapters/:situationId" element={
-              <AdminRoute>
-                <ChapterManagementPage />
-              </AdminRoute>
-            } />
-            <Route path="/users" element={
-              <AdminRoute>
-                <UsersPage />
-              </AdminRoute>
-            } />
-            <Route path="/profile" element={
-              <AdminRoute>
-                <ProfilePage />
-              </AdminRoute>
-            } />
-            {/* 將根路徑重定向到儀表板，如果未登入會被重定向到登入頁 */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/admin">
+              <Route path="login" element={<LoginPage />} />
+              <Route path="dashboard" element={
+                <AdminRoute>
+                  <DashboardPage />
+                </AdminRoute>
+              } />
+              <Route path="courses" element={
+                <AdminRoute>
+                  <CoursesPage />
+                </AdminRoute>
+              } />
+              <Route path="chapters/:situationId" element={
+                <AdminRoute>
+                  <ChapterManagementPage />
+                </AdminRoute>
+              } />
+              <Route path="users" element={
+                <AdminRoute>
+                  <UsersPage />
+                </AdminRoute>
+              } />
+              <Route path="profile" element={
+                <AdminRoute>
+                  <ProfilePage />
+                </AdminRoute>
+              } />
+              <Route index element={<Navigate to="dashboard" replace />} />
+            </Route>
+            <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
           </Routes>
         </BrowserRouter>
       </ToastProvider>

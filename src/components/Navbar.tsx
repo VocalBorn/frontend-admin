@@ -15,7 +15,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/admin/login");
   };
 
   const getRoleDisplayName = (role: string) => {
@@ -41,7 +41,7 @@ export default function Navbar() {
         <div className="flex items-center space-x-6 ml-auto">
           {/* 課程管理 */}
           <Link 
-            to="/courses" 
+            to="/admin/courses" 
             className="flex items-center space-x-2 text-sm font-medium transition-colors hover:text-primary"
           >
             <Book className="h-4 w-4" />
@@ -50,7 +50,7 @@ export default function Navbar() {
 
           {/* 使用者管理 */}
           <Link 
-            to="/users" 
+            to="/admin/users" 
             className="flex items-center space-x-2 text-sm font-medium transition-colors hover:text-primary"
           >
             <Users className="h-4 w-4" />
@@ -80,7 +80,7 @@ export default function Navbar() {
                 </>
               )}
               <DropdownMenuItem asChild>
-                <Link to="/profile" className="flex items-center">
+                <Link to="/admin/profile" className="flex items-center">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>個人資料設定</span>
                 </Link>

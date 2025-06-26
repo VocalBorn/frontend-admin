@@ -21,7 +21,7 @@ const LoginPage = () => {
   // 如果已經認證成功，重定向到 dashboard
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/dashboard");
+      navigate("/admin/dashboard");
     }
   }, [isAuthenticated, navigate]);
 

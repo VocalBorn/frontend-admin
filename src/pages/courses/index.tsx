@@ -105,7 +105,7 @@ const CoursesPage = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
-                          onClick={() => navigate(`/chapters/${situation.situation_id}`)}
+                          onClick={() => navigate(`/admin/chapters/${situation.situation_id}`)}
                         >
                           <BookOpen className="mr-2 h-4 w-4" />
                           管理章節
