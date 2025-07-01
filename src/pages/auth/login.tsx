@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authApi } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
+import logoImage from "@/assets/images/LOGO.png";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -62,10 +63,13 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-50">
+    <div className="flex h-screen items-center justify-center bg-blue-100">
       <Card className="w-[350px]">
         <CardHeader>
-          <CardTitle className="text-center">登入系統</CardTitle>
+          <CardTitle className="text-center">
+            <img src={logoImage} alt="Logo" className="mx-auto mb-4 h-30" />
+            語聲俱來 | 後台管理系統
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
