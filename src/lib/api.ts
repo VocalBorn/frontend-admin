@@ -15,6 +15,7 @@ export * from './users-api';
 export * from './situations-api';
 export * from './chapters-api';
 export * from './sentences-api';
+export * from './verification-api';
 
 
 
