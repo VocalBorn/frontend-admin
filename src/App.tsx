@@ -5,6 +5,7 @@ import CoursesPage from './pages/courses'
 import ChapterManagementPage from './pages/chapters'
 import UsersPage from './pages/users'
 import ProfilePage from './pages/profile'
+import VerificationPage from './pages/verification'
 import AdminRoute from './components/AdminRoute'
 import { ToastProvider } from './contexts/ToastContext'
 import { AuthProvider } from './contexts/AuthContext'
@@ -40,6 +41,11 @@ function App() {
               <Route path="profile" element={
                 <AdminRoute>
                   <ProfilePage />
+                </AdminRoute>
+              } />
+              <Route path="verification" element={
+                <AdminRoute>
+                  <VerificationPage />
                 </AdminRoute>
               } />
               <Route index element={<Navigate to="dashboard" replace />} />

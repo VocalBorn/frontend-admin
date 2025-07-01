@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { UserCircle, Book, Users, LogOut, Settings } from "lucide-react";
+import { UserCircle, Book, Users, LogOut, Settings, CheckCircle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,6 +55,15 @@ export default function Navbar() {
           >
             <Users className="h-4 w-4" />
             <span className="hidden md:inline">使用者管理</span>
+          </Link>
+
+          {/* 治療師驗證 */}
+          <Link 
+            to="/admin/verification" 
+            className="flex items-center space-x-2 text-sm font-medium transition-colors hover:text-primary"
+          >
+            <CheckCircle className="h-4 w-4" />
+            <span className="hidden md:inline">治療師驗證</span>
           </Link>
 
           {/* 個人資料選單 */}
