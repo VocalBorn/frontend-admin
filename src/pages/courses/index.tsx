@@ -64,12 +64,17 @@ const CoursesPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col"> {/* 調整頁面結構與其他頁面一致 */}
       <Navbar />
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-8"> {/* 調整內部間距 */}
+        <div className="mb-6"> {/* 調整標題與描述的間距 */}
+          <h1 className="text-3xl font-bold">課程管理</h1> {/* 調整標題字體大小與粗細 */}
+          <p className="text-muted-foreground mt-2">管理課程與相關情境</p> {/* 新增描述文字 */}
+        </div>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>課程管理</CardTitle>
+            <CardTitle>情境列表</CardTitle> {/* 調整標題 */}
             <Button onClick={() => setDialogOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
               新增情境
