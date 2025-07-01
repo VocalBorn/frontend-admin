@@ -22,7 +22,9 @@ const VerificationPage: React.FC = () => {
   } = useVerification();
 
   const handleViewDetails = async (applicationId: string) => {
+    console.log('Loading details for application ID:', applicationId); // 添加日誌
     await loadApplicationDetails(applicationId);
+    console.log('Selected application:', selectedApplication); // 確認是否正確加載
     setShowDetailsDialog(true);
   };
 
@@ -235,7 +237,10 @@ const VerificationPage: React.FC = () => {
       <ApplicationDetailsDialog
         application={selectedApplication}
         isOpen={showDetailsDialog}
-        onClose={handleCloseDialog}
+        onClose={() => {
+          console.log('Closing dialog'); // 添加日誌
+          handleCloseDialog();
+        }}
       />
     </div>
   );
