@@ -91,4 +91,10 @@ export const usersApi = {
     const response = await api.delete<UserResponse>(`/admin/users/${userId}`, { data });
     return response.data;
   },
+
+  // 取得當前登入用戶的詳細資料
+  getUserProfileDetails: async () => {
+    const response = await api.get("/user/profile");
+    return response.data;
+  },
 };
