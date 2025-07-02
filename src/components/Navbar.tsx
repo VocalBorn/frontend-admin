@@ -35,7 +35,7 @@ export default function Navbar() {
     <nav className="border-b">
       <div className="flex h-16 items-center px-4">
         <div className="flex items-center space-x-4">
-          <h2 className="text-lg font-semibold">VocalBorn Admin</h2>
+          <h2 className="text-lg font-semibold">語聲俱來 | 後台管理系統</h2>
         </div>
         
         <div className="flex items-center space-x-6 ml-auto">
