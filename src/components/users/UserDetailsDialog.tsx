@@ -90,6 +90,10 @@ const UserDetailsDialog = ({ user, open, onOpenChange, onRoleChange, onDeleteUse
                   <label className="text-sm font-medium text-muted-foreground">電話</label>
                   <div className="text-base">{user.phone || '未設定'}</div>
                 </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium text-muted-foreground">Email</label>
+                  <div className="text-base">{user.email}</div>
+                </div>
               </div>
             </CardContent>
           </Card>

@@ -10,6 +10,7 @@ export interface UserResponse {
   gender: string | null;
   age: number | null;
   phone: string | null;
+  email: string; // 新增的 email 欄位
   role: UserRole;
   created_at: string;
   updated_at: string;

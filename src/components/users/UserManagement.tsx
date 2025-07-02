@@ -215,6 +215,7 @@ const UserManagement = () => {
                       <TableHead className="min-w-[60px] hidden md:table-cell">年齡</TableHead>
                       <TableHead className="min-w-[120px] hidden lg:table-cell">電話</TableHead>
                       <TableHead className="min-w-[100px]">角色</TableHead>
+                      <TableHead className="min-w-[200px] hidden xl:table-cell">Email</TableHead>
                       <TableHead className="min-w-[140px] hidden xl:table-cell">註冊時間</TableHead>
                       <TableHead className="min-w-[80px]">操作</TableHead>
                     </TableRow>
@@ -231,6 +232,7 @@ const UserManagement = () => {
                             {getRoleDisplayName(user.role)}
                           </Badge>
                         </TableCell>
+                        <TableCell className="hidden xl:table-cell">{user.email}</TableCell>
                         <TableCell className="hidden xl:table-cell">{formatDate(user.created_at)}</TableCell>
                         <TableCell>
                           <Button 
