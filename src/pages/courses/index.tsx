@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import Navbar from "@/components/Navbar";
 import { SituationDialog } from "@/components/situations/SituationDialog";
 import { MoreVertical, Plus, Edit, Trash2, BookOpen } from "lucide-react";
 import {
@@ -15,6 +14,7 @@ import {
 import { useSituations } from "@/hooks/useSituations";
 import { useSituationStats } from "@/hooks/useSituationStats";
 import type { SituationResponse, SituationCreate, SituationUpdate } from "@/lib/api";
+import AppLayout from '@/components/AppLayout';
 
 const CoursesPage = () => {
   const navigate = useNavigate();
@@ -64,9 +64,8 @@ const CoursesPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col"> {/* 調整頁面結構與其他頁面一致 */}
-      <Navbar />
-      <div className="flex-1 p-8"> {/* 調整內部間距 */}
+    <AppLayout>
+      <div className="flex-1">
         <div className="mb-6"> {/* 調整標題與描述的間距 */}
           <h1 className="text-3xl font-bold">課程管理</h1> {/* 調整標題字體大小與粗細 */}
           <p className="text-muted-foreground mt-2">管理課程與相關情境</p> {/* 新增描述文字 */}
@@ -151,7 +150,7 @@ const CoursesPage = () => {
           mode={editingSituation ? "edit" : "create"}
         />
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import Navbar from "@/components/Navbar";
 import { ChapterDialog } from "@/components/chapters/ChapterDialog";
 import { SentenceDialog } from "@/components/sentences/SentenceDialog";
 import { ArrowLeft, Plus, Edit, Trash2, PlayCircle, MessageSquare } from "lucide-react";
@@ -19,6 +18,7 @@ import { situationsApi } from "@/lib/situations-api";
 import type { SituationResponse } from "@/lib/situations-api";
 import type { ChapterResponse, ChapterCreate, ChapterUpdate } from "@/lib/chapters-api";
 import type { SentenceResponse, SentenceCreate, SentenceUpdate } from "@/lib/sentences-api";
+import AppLayout from '@/components/AppLayout';
 
 const ChapterManagementPage = () => {
   const { situationId } = useParams<{ situationId: string }>();
@@ -123,9 +123,8 @@ const ChapterManagementPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <div className="flex-1 p-8">
+    <AppLayout>
+      <div className="flex-1">
         {/* 頁面標題 */}
         <div className="mb-6 flex items-center gap-4">
           <Button
@@ -136,14 +135,14 @@ const ChapterManagementPage = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             返回課程列表
           </Button>
-          <div>
+            <div className="flex gap-4 items-end">
             <h1 className="text-3xl font-bold">章節管理</h1>
             {situation && (
-              <p className="text-muted-foreground mt-1">
-                情境：{situation.situation_name}
+              <p className="text-muted-foreground">
+              情境：{situation.situation_name}
               </p>
             )}
-          </div>
+            </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -363,7 +362,7 @@ const ChapterManagementPage = () => {
           mode={editingSentence ? "edit" : "create"}
         />
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

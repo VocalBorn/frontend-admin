@@ -1,21 +1,24 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Navbar from "@/components/Navbar";
+import AppLayout from "@/components/AppLayout";
 
 const DashboardPage = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <div className="flex-1 p-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>系統管理員儀表板</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>歡迎使用管理系統</p>
-        </CardContent>
-      </Card>
+    <AppLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">系統管理員儀表板</h1>
+          <p className="text-muted-foreground">歡迎使用 VocalBorn 後台管理系統</p>
+        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>總覽</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>歡迎使用管理系統</p>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

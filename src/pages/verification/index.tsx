@@ -6,11 +6,11 @@ import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Table } from '../../components/ui/table';
 import ApplicationDetailsDialog from '../../components/verification/ApplicationDetailsDialog';
-import Navbar from '../../components/Navbar';
+import AppLayout from '@/components/AppLayout';
 
 const VerificationPage: React.FC = () => {
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
-  
+
   const {
     applications,
     selectedApplication,
@@ -53,7 +53,6 @@ const VerificationPage: React.FC = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="bg-red-50 border border-red-200 rounded-md p-4">
             <div className="flex">
@@ -80,9 +79,8 @@ const VerificationPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col"> {/* 調整頁面結構與使用者管理頁面一致 */}
-      <Navbar />
-      <div className="flex-1 p-8"> {/* 調整內部間距 */}
+    <AppLayout>
+      <div className="flex-1"> {/* 調整內部間距 */}
         <div className="mb-6"> {/* 調整標題與描述的間距 */}
           <h1 className="text-3xl font-bold">治療師申請驗證</h1> {/* 調整標題字體大小與粗細 */}
           <p className="text-muted-foreground mt-2">管理治療師申請，審核文件並決定是否批准</p> {/* 調整描述文字樣式 */}
@@ -242,7 +240,7 @@ const VerificationPage: React.FC = () => {
           handleCloseDialog();
         }}
       />
-    </div>
+    </AppLayout>
   );
 };
 
