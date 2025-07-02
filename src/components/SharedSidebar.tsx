@@ -16,6 +16,7 @@ import {
   Settings,
   Building2,
   LogOut,
+  User2
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -117,17 +118,24 @@ const SharedSidebar = () => {
         <SidebarGroup className="mt-auto">
           <div className="flex flex-col ">
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left hover:bg-gray-100">
-                <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-gray-200">
-                  <Users className="h-5 w-5 text-gray-500" />
+              <DropdownMenuTrigger>
+                <div className="flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left hover:bg-gray-100 group-data-[collapsible=icon]:hidden">
+                  <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-gray-200">
+                    <User2 className="h-5 w-5 text-gray-500" />
+                  </div>
+                  <div className="grid flex-1 text-left text-sm leading-tight ">
+                    <span className="truncate font-medium">
+                      {user?.name || "使用者名稱"}
+                    </span>
+                    <span className="text-muted-foreground truncate text-xs">
+                      {user?.email || "user@example.com"}
+                    </span>
+                  </div>
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                  <span className="truncate font-medium">
-                    {user?.name || "使用者名稱"}
-                  </span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {user?.email || "user@example.com"}
-                  </span>
+                <div className="hidden group-data-[collapsible=icon]:flex h-8 w-8 rounded-md hover:bg-gray-100">
+                    <div className="items-center justify-center p-2 ">
+                      <User2 className="h-4 w-4 text-gray-500" />
+                    </div>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
