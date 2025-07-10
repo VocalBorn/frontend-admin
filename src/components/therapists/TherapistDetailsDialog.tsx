@@ -1,15 +1,23 @@
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { UserPlus } from 'lucide-react';
 import type { UserWithProfileResponse } from '@/lib/therapist-api';
+import AssignClientDialog from './AssignClientDialog';
+import TherapistClientsCard from './TherapistClientsCard';
 
 interface TherapistDetailsDialogProps {
   therapist: UserWithProfileResponse | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onRefresh?: () => void;
 }
 
-const TherapistDetailsDialog = ({ therapist, open, onOpenChange }: TherapistDetailsDialogProps) => {
+const TherapistDetailsDialog = ({ therapist, open, onOpenChange, onRefresh }: TherapistDetailsDialogProps) => {
+  const [showAssignDialog, setShowAssignDialog] = useState(false);
+  
   if (!therapist) return null;
 
   const formatDate = (dateString: string) => {
@@ -53,7 +61,20 @@ const TherapistDetailsDialog = ({ therapist, open, onOpenChange }: TherapistDeta
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full h-full max-w-none max-h-none m-0 rounded-none sm:w-3/4 sm:h-auto sm:max-w-2xl sm:max-h-[90vh] sm:m-6 sm:rounded-lg overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>治療師詳情</DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle>治療師詳情</DialogTitle>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAssignDialog(true)}
+                className="flex items-center gap-2"
+              >
+                <UserPlus className="h-4 w-4" />
+                指派客戶
+              </Button>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -176,8 +197,25 @@ const TherapistDetailsDialog = ({ therapist, open, onOpenChange }: TherapistDeta
               </CardContent>
             </Card>
           )}
+
+          {/* 指派客戶列表 */}
+          <TherapistClientsCard 
+            therapistId={therapist.user_id}
+            onClientUnassigned={onRefresh}
+          />
         </div>
       </DialogContent>
+      
+      {/* 指派客戶對話框 */}
+      <AssignClientDialog
+        therapist={therapist}
+        open={showAssignDialog}
+        onOpenChange={setShowAssignDialog}
+        onSuccess={() => {
+          onRefresh?.();
+          setShowAssignDialog(false);
+        }}
+      />
     </Dialog>
   );
 };

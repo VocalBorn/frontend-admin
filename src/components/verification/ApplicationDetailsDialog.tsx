@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { TherapistApplication } from '../../lib/verification-api';
 import { ApplicationStatus, getStatusText, getStatusColor, getDocumentTypeText } from '../../lib/verification-api';
 import { Button } from '../ui/button';
@@ -6,7 +6,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
+import { User } from 'lucide-react';
 import { useVerification } from '../../hooks/useVerification';
+import { therapistApi, type UserWithProfileResponse } from '../../lib/therapist-api';
+import { usersApi, type UserResponse } from '../../lib/users-api';
+import { getErrorMessage } from '../../lib/api';
+import { useToast } from '../../hooks/useToast';
 
 interface ApplicationDetailsDialogProps {
   application: TherapistApplication | null;
@@ -22,8 +27,65 @@ const ApplicationDetailsDialog: React.FC<ApplicationDetailsDialogProps> = ({
   const [actionReason, setActionReason] = useState('');
   const [actionType, setActionType] = useState<'approve' | 'reject' | 'request_action' | null>(null);
   const [showActionDialog, setShowActionDialog] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserResponse | null>(null);
+  const [therapistProfile, setTherapistProfile] = useState<UserWithProfileResponse | null>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
   const { handleApprove, handleReject, handleRequestAction, getDocumentUrl, loading } = useVerification();
+  const { showError } = useToast();
 
+  // 載入用戶和治療師資料
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (!application?.user_id || !isOpen) return;
+      
+      try {
+        setProfileLoading(true);
+        
+        // 嘗試載入治療師專業檔案資料
+        try {
+          // 先嘗試直接取得治療師檔案
+          const therapistProfile = await therapistApi.getProfileById(application.user_id);
+          // 取得所有治療師列表以獲得完整的用戶資料
+          const allTherapists = await therapistApi.getAllTherapists();
+          const fullTherapistData = allTherapists.find(t => t.user_id === application.user_id);
+          
+          if (fullTherapistData) {
+            setTherapistProfile(fullTherapistData);
+          } else {
+            // 如果在治療師列表中找不到，建立一個包含治療師檔案的結構
+            setTherapistProfile({
+              user_id: application.user_id,
+              account_id: '', // 這些資訊會從 userProfile 取得
+              name: '',
+              gender: null,
+              age: null,
+              phone: null,
+              role: 'client' as const,
+              created_at: '',
+              updated_at: '',
+              therapist_profile: therapistProfile
+            });
+          }
+        } catch {
+          // 如果無法載入治療師檔案，表示申請人還沒有治療師檔案
+          setTherapistProfile(null);
+        }
+        
+        // 載入基本用戶資料
+        const allUsers = await usersApi.list();
+        const userData = allUsers.users.find(u => u.user_id === application.user_id);
+        setUserProfile(userData || null);
+        
+      } catch (error) {
+        showError(getErrorMessage(error));
+      } finally {
+        setProfileLoading(false);
+      }
+    };
+    
+    loadUserProfile();
+  }, [application?.user_id, isOpen, showError]);
+  
   if (!application) return null;
 
   const handleAction = async () => {
@@ -93,9 +155,128 @@ const ApplicationDetailsDialog: React.FC<ApplicationDetailsDialogProps> = ({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="w-full h-full max-w-none max-h-none m-0 rounded-none sm:w-3/4 sm:h-auto sm:max-w-2xl sm:max-h-[90vh] sm:m-6 sm:rounded-lg overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>治療師申請詳情</DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle>治療師申請詳情</DialogTitle>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <User className="h-4 w-4" />
+                申請人資料
+              </div>
+            </div>
           </DialogHeader>
           <div className="space-y-6">
+            {/* 申請人個人資料 */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  申請人資料
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {profileLoading ? (
+                  <div className="text-center py-4 text-muted-foreground">載入用戶資料中...</div>
+                ) : userProfile ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">姓名</label>
+                      <div className="text-base font-medium">{userProfile.name}</div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Email</label>
+                      <div className="text-base">{userProfile.email}</div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">性別</label>
+                      <div className="text-base">{userProfile.gender || '未設定'}</div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">年齡</label>
+                      <div className="text-base">{userProfile.age ? `${userProfile.age} 歲` : '未設定'}</div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">電話</label>
+                      <div className="text-base">{userProfile.phone || '未設定'}</div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">目前角色</label>
+                      <div>
+                        <Badge variant={userProfile.role === 'admin' ? 'destructive' : userProfile.role === 'therapist' ? 'warning' : 'secondary'}>
+                          {userProfile.role === 'admin' ? '管理員' : userProfile.role === 'therapist' ? '語言治療師' : '一般用戶'}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="col-span-2">
+                      <label className="text-sm font-medium text-muted-foreground">用戶 ID</label>
+                      <div className="font-mono text-xs bg-muted p-2 rounded">{userProfile.user_id}</div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">註冊時間</label>
+                      <div className="text-sm">{new Date(userProfile.created_at).toLocaleString()}</div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">最後更新</label>
+                      <div className="text-sm">{new Date(userProfile.updated_at).toLocaleString()}</div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-4 text-muted-foreground">無法載入用戶資料</div>
+                )}
+              </CardContent>
+            </Card>
+            
+            {/* 申請治療師專業資料 */}
+            {therapistProfile?.therapist_profile && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">申請治療師專業資料</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">執照號碼</label>
+                      <div className="text-base">{therapistProfile.therapist_profile.license_number}</div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">專業領域</label>
+                      <div className="text-base">{therapistProfile.therapist_profile.specialization || '未設定'}</div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">工作經驗</label>
+                      <div className="text-base">
+                        {therapistProfile.therapist_profile.years_experience ? `${therapistProfile.therapist_profile.years_experience} 年` : '未設定'}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">學歷</label>
+                      <div className="text-base">{therapistProfile.therapist_profile.education || '未設定'}</div>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">個人簡介</label>
+                    <div className="text-base mt-1 min-h-[60px] p-2 bg-muted rounded">
+                      {therapistProfile.therapist_profile.bio || '未設定'}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* 如果沒有治療師專業資料的提示 */}
+            {!therapistProfile?.therapist_profile && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">申請治療師專業資料</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8 text-muted-foreground">
+                    <div className="text-sm">
+                      申請人尚未提供治療師專業資料，或資料載入失敗
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
             {/* 申請資訊 */}
             <Card>
               <CardHeader>
@@ -104,8 +285,8 @@ const ApplicationDetailsDialog: React.FC<ApplicationDetailsDialogProps> = ({
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">申請人 ID</label>
-                    <div className="text-base font-medium">{application.user_id}</div>
+                    <label className="text-sm font-medium text-muted-foreground">申請 ID</label>
+                    <div className="font-mono text-xs bg-muted p-2 rounded">{application.id}</div>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">申請狀態</label>
@@ -126,7 +307,7 @@ const ApplicationDetailsDialog: React.FC<ApplicationDetailsDialogProps> = ({
                   {application.rejection_reason && (
                     <div className="col-span-2">
                       <label className="text-sm font-medium text-muted-foreground">拒絕原因</label>
-                      <div className="text-base">{application.rejection_reason}</div>
+                      <div className="text-base p-2 bg-red-50 border border-red-200 rounded">{application.rejection_reason}</div>
                     </div>
                   )}
                 </div>

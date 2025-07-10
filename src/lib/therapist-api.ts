@@ -115,9 +115,9 @@ export const therapistApi = {
     return response.data;
   },
 
-  // 指派客戶給治療師
-  assignClient: async (data: TherapistClientCreate): Promise<TherapistClientResponse> => {
-    const response = await api.post<TherapistClientResponse>('/therapist/assign-client', data);
+  // 指派客戶給治療師 (管理員功能)
+  assignClient: async (therapistId: string, data: TherapistClientCreate): Promise<TherapistClientResponse> => {
+    const response = await api.post<TherapistClientResponse>(`/therapist/assign-client/${therapistId}`, data);
     return response.data;
   },
 

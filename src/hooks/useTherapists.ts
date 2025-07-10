@@ -143,9 +143,9 @@ export const useTherapistClients = () => {
     fetchClients();
   }, [fetchClients]);
 
-  const assignClient = async (data: TherapistClientCreate) => {
+  const assignClient = async (therapistId: string, data: TherapistClientCreate) => {
     try {
-      await therapistApi.assignClient(data);
+      await therapistApi.assignClient(therapistId, data);
       showSuccess('客戶指派成功');
       await fetchClients();
     } catch (error) {

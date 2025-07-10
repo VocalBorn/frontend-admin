@@ -348,6 +348,7 @@ const UserManagement = () => {
         therapist={selectedTherapist}
         open={showTherapistDetails}
         onOpenChange={handleCloseTherapistDetails}
+        onRefresh={() => window.location.reload()}
       />
     </div>
   );
