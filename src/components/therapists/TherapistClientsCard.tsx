@@ -22,9 +22,8 @@ const TherapistClientsCard = ({ therapistId, onClientUnassigned }: TherapistClie
     const fetchClients = async () => {
       try {
         setLoading(true);
-        // 注意：這個 API 端點回傳當前登入治療師的客戶，我們需要一個能取得特定治療師客戶的端點
-        // 或者在管理員介面中使用不同的方法
-        const data = await therapistApi.getMyClients();
+        // 使用管理員專用的端點來取得指定治療師的客戶列表
+        const data = await therapistApi.getTherapistClients(therapistId);
         setClients(data);
       } catch (error) {
         showError(getErrorMessage(error));

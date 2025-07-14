@@ -127,6 +127,12 @@ export const therapistApi = {
     return response.data;
   },
 
+  // 管理員取得指定治療師的客戶列表
+  getTherapistClients: async (therapistId: string): Promise<TherapistClientResponse[]> => {
+    const response = await api.get<TherapistClientResponse[]>(`/admin/therapists/${therapistId}/clients`);
+    return response.data;
+  },
+
   // 取消客戶指派
   unassignClient: async (clientId: string): Promise<void> => {
     await api.delete(`/therapist/unassign-client/${clientId}`);
