@@ -3,24 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useUsers } from '@/hooks/useUsers';
-import { useTherapists } from '@/hooks/useTherapists';
 import UserDetailsDialog from './UserDetailsDialog';
 import DeleteUserDialog from './DeleteUserDialog';
-import TherapistDetailsDialog from '../therapists/TherapistDetailsDialog';
 import type { UserResponse, UserRole } from '@/lib/api';
-import type { UserWithProfileResponse } from '@/lib/therapist-api';
 
 const UserManagement = () => {
-  const { users, stats, loading: usersLoading, updateUserRole, deleteUser } = useUsers();
-  const { therapists, loading: therapistsLoading } = useTherapists();
+  const { users, stats, loading, updateUserRole, deleteUser } = useUsers();
   
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null);
   const [showUserDetails, setShowUserDetails] = useState(false);
-  const [selectedTherapist, setSelectedTherapist] = useState<UserWithProfileResponse | null>(null);
-  const [showTherapistDetails, setShowTherapistDetails] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [userToDelete, setUserToDelete] = useState<UserResponse | null>(null);
 
@@ -71,15 +64,6 @@ const UserManagement = () => {
     setSelectedUser(null);
   };
 
-  const handleViewTherapistDetails = (therapist: UserWithProfileResponse) => {
-    setSelectedTherapist(therapist);
-    setShowTherapistDetails(true);
-  };
-
-  const handleCloseTherapistDetails = () => {
-    setShowTherapistDetails(false);
-    setSelectedTherapist(null);
-  };
 
   const handleDeleteUser = (userId: string) => {
     const user = users.find(u => u.user_id === userId);
@@ -130,22 +114,9 @@ const UserManagement = () => {
     });
   };
 
-  const formatDateShort = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('zh-TW', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
-  };
 
-  const getProfileStatusBadge = (therapist: UserWithProfileResponse) => {
-    if (therapist.therapist_profile) {
-      return <Badge variant="default" className="whitespace-nowrap">已建立檔案</Badge>;
-    }
-    return <Badge variant="secondary" className="whitespace-nowrap">未建立檔案</Badge>;
-  };
 
-  if (usersLoading || therapistsLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-lg">載入中...</div>
@@ -193,14 +164,7 @@ const UserManagement = () => {
         </div>
       )}
 
-      {/* 分頁管理 */}
-      <Tabs defaultValue="users" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="users">所有用戶</TabsTrigger>
-          <TabsTrigger value="therapists">治療師專區</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="users">
+      {/* 用戶列表 */}
           <Card>
             <CardHeader>
               <CardTitle>用戶列表</CardTitle>
@@ -256,75 +220,6 @@ const UserManagement = () => {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="therapists">
-          <div className="space-y-4">
-            {/* 治療師列表 */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <CardTitle>治療師列表</CardTitle>
-                <h2 className="text-muted-foreground">
-                  已建立檔案 {therapists.filter(t => t.therapist_profile).length}/{therapists.length}
-                </h2>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="min-w-[100px]">姓名</TableHead>
-                        <TableHead className="min-w-[60px] hidden sm:table-cell">性別</TableHead>
-                        <TableHead className="min-w-[60px] hidden md:table-cell">年齡</TableHead>
-                        <TableHead className="min-w-[120px] hidden lg:table-cell">電話</TableHead>
-                        <TableHead className="min-w-[120px] hidden xl:table-cell">專業領域</TableHead>
-                        <TableHead className="min-w-[120px] hidden 2xl:table-cell">執照號碼</TableHead>
-                        <TableHead className="min-w-[100px]">檔案狀態</TableHead>
-                        <TableHead className="min-w-[100px] hidden lg:table-cell">註冊時間</TableHead>
-                        <TableHead className="min-w-[80px]">操作</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {therapists.map((therapist: UserWithProfileResponse) => (
-                        <TableRow key={therapist.user_id}>
-                          <TableCell className="font-medium">{therapist.name}</TableCell>
-                          <TableCell className="hidden sm:table-cell">{therapist.gender || '-'}</TableCell>
-                          <TableCell className="hidden md:table-cell">{therapist.age || '-'}</TableCell>
-                          <TableCell className="hidden lg:table-cell">{therapist.phone || '-'}</TableCell>
-                          <TableCell className="hidden xl:table-cell">
-                            {therapist.therapist_profile?.specialization || '-'}
-                          </TableCell>
-                          <TableCell className="hidden 2xl:table-cell">
-                            {therapist.therapist_profile?.license_number || '-'}
-                          </TableCell>
-                          <TableCell>
-                            {getProfileStatusBadge(therapist)}
-                          </TableCell>
-                          <TableCell className="hidden lg:table-cell">{formatDateShort(therapist.created_at)}</TableCell>
-                          <TableCell>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleViewTherapistDetails(therapist)}
-                            >
-                              詳情
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-                {therapists.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    沒有找到治療師資料
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
 
       {/* 用戶詳情對話框 */}
       <UserDetailsDialog
@@ -343,13 +238,6 @@ const UserManagement = () => {
         onConfirm={handleConfirmDelete}
       />
 
-      {/* 治療師詳情對話框 */}
-      <TherapistDetailsDialog
-        therapist={selectedTherapist}
-        open={showTherapistDetails}
-        onOpenChange={handleCloseTherapistDetails}
-        onRefresh={() => window.location.reload()}
-      />
     </div>
   );
 };

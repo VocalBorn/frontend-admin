@@ -4,8 +4,8 @@ import DashboardPage from './pages/dashboard'
 import CoursesPage from './pages/courses'
 import ChapterManagementPage from './pages/chapters'
 import UsersPage from './pages/users'
+import TherapistsPage from './pages/therapists'
 import ProfilePage from './pages/profile'
-import VerificationPage from './pages/verification'
 import AdminRoute from './components/AdminRoute'
 import { ToastProvider } from './contexts/ToastContext'
 import { AuthProvider } from './contexts/AuthContext'
@@ -38,16 +38,18 @@ function App() {
                   <UsersPage />
                 </AdminRoute>
               } />
+              <Route path="therapists" element={
+                <AdminRoute>
+                  <TherapistsPage />
+                </AdminRoute>
+              } />
               <Route path="profile" element={
                 <AdminRoute>
                   <ProfilePage />
                 </AdminRoute>
               } />
-              <Route path="verification" element={
-                <AdminRoute>
-                  <VerificationPage />
-                </AdminRoute>
-              } />
+              {/* 重定向舊的驗證頁面路由到治療師管理頁面 */}
+              <Route path="verification" element={<Navigate to="/admin/therapists" replace />} />
               <Route index element={<Navigate to="dashboard" replace />} />
             </Route>
             <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
