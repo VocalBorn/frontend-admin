@@ -30,6 +30,10 @@ export interface SentenceResponse {
   content: string;
   start_time: number | null;
   end_time: number | null;
+  example_audio_path: string | null;
+  example_audio_duration: number | null;
+  example_file_size: number | null;
+  example_content_type: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -37,6 +41,15 @@ export interface SentenceResponse {
 export interface SentenceListResponse {
   total: number;
   sentences: SentenceResponse[];
+}
+
+export interface SentenceAudioUploadResponse {
+  sentence_id: string;
+  audio_path: string;
+  audio_duration: number | null;
+  file_size: number;
+  content_type: string;
+  message: string;
 }
 
 // 語句相關 API
@@ -68,5 +81,22 @@ export const sentencesApi = {
   // 刪除語句
   delete: async (sentenceId: string): Promise<void> => {
     await api.delete(`/situations/sentence/${sentenceId}`);
+  },
+
+  // 上傳語句示範音訊
+  uploadExampleAudio: async (sentenceId: string, audioFile: File): Promise<SentenceAudioUploadResponse> => {
+    const formData = new FormData();
+    formData.append('file', audioFile);
+    
+    const response = await api.post<SentenceAudioUploadResponse>(
+      `/situations/sentence/${sentenceId}/upload-example-audio`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return response.data;
   },
 };

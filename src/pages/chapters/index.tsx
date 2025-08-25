@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ChapterDialog } from "@/components/chapters/ChapterDialog";
 import { SentenceDialog } from "@/components/sentences/SentenceDialog";
-import { ArrowLeft, Plus, Edit, Trash2, PlayCircle, MessageSquare } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, PlayCircle, MessageSquare, Volume2, VolumeX } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -272,7 +272,15 @@ const ChapterManagementPage = () => {
                       此章節尚未建立任何語句
                     </p>
                   ) : (
-                    sentences.map((sentence) => (
+                    sentences
+                      .sort((a, b) => {
+                        // 優先按 start_time 排序，沒有 start_time 的放在最後
+                        if (a.start_time === null && b.start_time === null) return 0;
+                        if (a.start_time === null) return 1;
+                        if (b.start_time === null) return -1;
+                        return a.start_time - b.start_time;
+                      })
+                      .map((sentence) => (
                       <div
                         key={sentence.sentence_id}
                         className="p-4 border rounded-lg"
@@ -297,6 +305,20 @@ const ChapterManagementPage = () => {
                                   ({sentence.role_description})
                                 </span>
                               )}
+                              {/* 音訊狀態指示器 */}
+                              <div className="flex items-center gap-1">
+                                {sentence.example_audio_path ? (
+                                  <div className="flex items-center gap-1 text-green-600">
+                                    <Volume2 className="w-4 h-4" />
+                                    <span className="text-xs">有音訊</span>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-1 text-gray-400">
+                                    <VolumeX className="w-4 h-4" />
+                                    <span className="text-xs">無音訊</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             <p className="text-sm mb-2">{sentence.content}</p>
                             {(sentence.start_time || sentence.end_time) && (
@@ -360,6 +382,12 @@ const ChapterManagementPage = () => {
           onSubmit={handleSentenceSubmit}
           sentence={editingSentence}
           mode={editingSentence ? "edit" : "create"}
+          onAudioUpload={() => {
+            // 重新載入語句列表以更新音訊狀態
+            if (selectedChapter) {
+              loadSentences(selectedChapter.chapter_id);
+            }
+          }}
         />
       </div>
     </AppLayout>
