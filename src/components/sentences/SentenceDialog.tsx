@@ -188,6 +188,7 @@ export function SentenceDialog({
                 onUploadSuccess={() => {
                   onAudioUpload?.();
                 }}
+                onClose={() => onOpenChange(false)}
                 disabled={isSubmitting}
               />
             )}

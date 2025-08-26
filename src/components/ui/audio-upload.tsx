@@ -17,6 +17,7 @@ interface AudioUploadProps {
     contentType: string | null;
   };
   onUploadSuccess?: (response: SentenceAudioUploadResponse) => void;
+  onClose?: () => void;
   disabled?: boolean;
 }
 
@@ -24,6 +25,7 @@ export function AudioUpload({
   sentenceId,
   currentAudio,
   onUploadSuccess,
+  onClose,
   disabled = false,
 }: AudioUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -151,7 +153,9 @@ export function AudioUpload({
           message: '音訊已自動生成'
         });
       });
-    } catch (error) {
+      // 生成完成後關閉對話框
+      onClose?.();
+    } catch {
       // 錯誤處理已在 hook 中處理
     }
   };
@@ -229,6 +233,9 @@ export function AudioUpload({
         content_type: '',
         message: '音訊已刪除'
       });
+
+      // 刪除成功後關閉對話框
+      onClose?.();
     } catch (error) {
       console.error('刪除音訊失敗:', error);
       addToast({
