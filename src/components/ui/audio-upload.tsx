@@ -2,10 +2,11 @@ import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Upload, X, Volume2 } from 'lucide-react';
+import { Upload, X, Volume2, Sparkles, Play, Pause, Trash2 } from 'lucide-react';
 import { sentencesApi } from '@/lib/sentences-api';
 import type { SentenceAudioUploadResponse } from '@/lib/sentences-api';
 import { useToast } from '@/hooks/useToast';
+import { useSentenceAudioGeneration } from '@/hooks/useSentenceAudioGeneration';
 
 interface AudioUploadProps {
   sentenceId?: string;
@@ -27,8 +28,13 @@ export function AudioUpload({
 }: AudioUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoadingUrl, setIsLoadingUrl] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const { addToast } = useToast();
+  const { generating, generateSentenceAudio } = useSentenceAudioGeneration();
 
   const supportedFormats = ['mp3', 'wav', 'm4a', 'ogg', 'webm', 'flac', 'aac'];
   const maxFileSize = 50 * 1024 * 1024; // 50MB
@@ -130,9 +136,128 @@ export function AudioUpload({
     }
   };
 
+  const handleGenerateAudio = async () => {
+    if (!sentenceId) return;
+    
+    try {
+      await generateSentenceAudio(sentenceId, 'female', () => {
+        // 音訊生成成功後，觸發上傳成功回調來重新載入語句資料
+        onUploadSuccess?.({
+          sentence_id: sentenceId,
+          audio_path: 'generated',
+          audio_duration: null,
+          file_size: 0,
+          content_type: 'audio/wav',
+          message: '音訊已自動生成'
+        });
+      });
+    } catch (error) {
+      // 錯誤處理已在 hook 中處理
+    }
+  };
+
+  const handlePlayAudio = async () => {
+    if (!sentenceId || !currentAudio?.path) return;
+
+    if (isPlaying) {
+      // 如果正在播放，暫停音訊
+      audioRef.current?.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    try {
+      setIsLoadingUrl(true);
+      const response = await sentencesApi.getExampleAudioUrl(sentenceId, 15);
+      
+      if (response.status === 'success' && response.url) {
+        // 設定音訊URL並播放
+        if (audioRef.current) {
+          audioRef.current.src = response.url;
+          await audioRef.current.play();
+          setIsPlaying(true);
+        }
+      } else {
+        addToast({
+          title: '無法播放音訊',
+          description: response.message || '音訊檔案不存在',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('播放音訊失敗:', error);
+      addToast({
+        title: '播放失敗',
+        description: '無法載入音訊檔案，請稍後再試',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoadingUrl(false);
+    }
+  };
+
+  const handleDeleteAudio = async () => {
+    if (!sentenceId || !currentAudio?.path) return;
+
+    // 確認刪除
+    if (!confirm('確定要刪除這個示範音訊嗎？此操作無法復原。')) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      // 停止播放音訊（如果正在播放）
+      if (isPlaying) {
+        audioRef.current?.pause();
+        setIsPlaying(false);
+      }
+
+      const response = await sentencesApi.deleteExampleAudio(sentenceId);
+      
+      addToast({
+        title: '刪除成功',
+        description: response.message || '示範音訊已刪除',
+        variant: 'success',
+      });
+
+      // 觸發上傳成功回調來重新載入語句資料
+      onUploadSuccess?.({
+        sentence_id: sentenceId,
+        audio_path: '',
+        audio_duration: null,
+        file_size: 0,
+        content_type: '',
+        message: '音訊已刪除'
+      });
+    } catch (error) {
+      console.error('刪除音訊失敗:', error);
+      addToast({
+        title: '刪除失敗',
+        description: '無法刪除音訊檔案，請稍後再試',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
-      <Label className="text-sm font-medium">示範音訊</Label>
+      <div className="flex items-center justify-between">
+        <Label className="text-sm font-medium">示範音訊</Label>
+        {/* 自動生成按鈕 */}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleGenerateAudio}
+          disabled={disabled || !sentenceId || generating || uploading}
+          className="gap-2"
+        >
+          <Sparkles className="w-4 h-4" />
+          {generating ? '生成中...' : '自動生成'}
+        </Button>
+      </div>
       
       {/* 現有音訊顯示 */}
       {currentAudio?.path && (
@@ -149,22 +274,40 @@ export function AudioUpload({
                   </p>
                 </div>
               </div>
-              {/* 播放按鈕 - 暫時隱藏，因為需要實際的音訊URL */}
-              {/* <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={togglePlay}
-                disabled={disabled}
-              >
-                {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              </Button> */}
+              <div className="flex items-center gap-2">
+                {/* 播放按鈕 */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePlayAudio}
+                  disabled={disabled || isLoadingUrl || isDeleting}
+                >
+                  {isLoadingUrl ? (
+                    <div className="w-4 h-4 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                  ) : isPlaying ? (
+                    <Pause className="w-4 h-4" />
+                  ) : (
+                    <Play className="w-4 h-4" />
+                  )}
+                </Button>
+                {/* 刪除按鈕 */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDeleteAudio}
+                  disabled={disabled || isLoadingUrl || isDeleting}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  {isDeleting ? (
+                    <div className="w-4 h-4 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
             </div>
-            {/* <audio
-              ref={audioRef}
-              src={currentAudio.path}
-              onEnded={() => setPlaying(false)}
-            /> */}
           </CardContent>
         </Card>
       )}
@@ -251,6 +394,21 @@ export function AudioUpload({
         onChange={handleFileSelect}
         className="hidden"
         disabled={disabled}
+      />
+
+      {/* 音訊播放元素 */}
+      <audio
+        ref={audioRef}
+        onEnded={() => setIsPlaying(false)}
+        onError={() => {
+          setIsPlaying(false);
+          addToast({
+            title: '播放錯誤',
+            description: '音訊檔案可能已損壞或無法播放',
+            variant: 'destructive',
+          });
+        }}
+        style={{ display: 'none' }}
       />
     </div>
   );

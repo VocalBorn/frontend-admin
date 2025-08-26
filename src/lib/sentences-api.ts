@@ -52,6 +52,26 @@ export interface SentenceAudioUploadResponse {
   message: string;
 }
 
+export interface AudioGenerationResponse {
+  sentence_id?: string;
+  chapter_id?: string;
+  message: string;
+  generated_count?: number;
+}
+
+export interface SentenceAudioUrlResponse {
+  sentence_id: string;
+  status: string;
+  message: string;
+  url: string | null;
+}
+
+export interface SentenceAudioDeleteResponse {
+  sentence_id: string;
+  status: string;
+  message: string;
+}
+
 // 語句相關 API
 export const sentencesApi = {
   // 取得語句列表
@@ -96,6 +116,49 @@ export const sentencesApi = {
           'Content-Type': 'multipart/form-data',
         },
       }
+    );
+    return response.data;
+  },
+
+  // 自動生成語句示範音訊
+  generateExampleAudio: async (sentenceId: string, voice: string = 'female'): Promise<AudioGenerationResponse> => {
+    const response = await api.post<AudioGenerationResponse>(
+      `/situations/sentence/${sentenceId}/generate-example-audio`,
+      null,
+      {
+        params: { voice },
+      }
+    );
+    return response.data;
+  },
+
+  // 批次生成章節中所有語句示範音訊
+  generateSentencesAudio: async (chapterId: string, voice: string = 'female'): Promise<AudioGenerationResponse> => {
+    const response = await api.post<AudioGenerationResponse>(
+      `/situations/chapter/${chapterId}/generate-sentences-audio`,
+      null,
+      {
+        params: { voice },
+      }
+    );
+    return response.data;
+  },
+
+  // 取得語句示範音訊聆聽網址
+  getExampleAudioUrl: async (sentenceId: string, expiresMinutes: number = 15): Promise<SentenceAudioUrlResponse> => {
+    const response = await api.get<SentenceAudioUrlResponse>(
+      `/situations/sentence/${sentenceId}/example-audio-url`,
+      {
+        params: { expires_minutes: expiresMinutes },
+      }
+    );
+    return response.data;
+  },
+
+  // 刪除語句示範音訊
+  deleteExampleAudio: async (sentenceId: string): Promise<SentenceAudioDeleteResponse> => {
+    const response = await api.delete<SentenceAudioDeleteResponse>(
+      `/situations/sentence/${sentenceId}/example-audio`
     );
     return response.data;
   },
