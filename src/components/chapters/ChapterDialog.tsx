@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { Sparkles } from "lucide-react";
 import type { ChapterResponse, ChapterCreate, ChapterUpdate } from "@/lib/chapters-api";
+import { useSentenceAudioGeneration } from "@/hooks/useSentenceAudioGeneration";
 
 interface ChapterDialogProps {
   open: boolean;
@@ -30,6 +33,7 @@ export function ChapterDialog({
     video_url: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { generating, generateChapterAudio } = useSentenceAudioGeneration();
 
   useEffect(() => {
     if (mode === "edit" && chapter) {
@@ -61,6 +65,16 @@ export function ChapterDialog({
       console.error("提交失敗:", error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleGenerateChapterAudio = async () => {
+    if (!chapter?.chapter_id) return;
+    
+    try {
+      await generateChapterAudio(chapter.chapter_id, 'female');
+    } catch (error) {
+      // 錯誤處理已在 hook 中處理
     }
   };
 
@@ -121,17 +135,42 @@ export function ChapterDialog({
                 placeholder="https://example.com/video.mp4"
               />
             </div>
+
+            {/* 音訊生成區域 - 只在編輯模式顯示 */}
+            {mode === "edit" && chapter && (
+              <>
+                <Separator />
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium">批次音訊生成</Label>
+                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <p className="text-sm text-blue-700 mb-3">
+                      為本章節中的所有語句自動生成示範音訊
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleGenerateChapterAudio}
+                      disabled={isSubmitting || generating}
+                      className="gap-2"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      {generating ? "生成中..." : "生成本章節中的所有語句示範音訊"}
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
           <DialogFooter>
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={isSubmitting}
+              disabled={isSubmitting || generating}
             >
               取消
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || generating}>
               {isSubmitting ? "處理中..." : mode === "create" ? "新增" : "更新"}
             </Button>
           </DialogFooter>

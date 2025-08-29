@@ -12,11 +12,11 @@ import {
 import {
   Book,
   Users,
-  CheckCircle,
+  UserCheck,
   Settings,
   Building2,
   LogOut,
-  User2
+  User2,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -101,14 +101,14 @@ const SharedSidebar = () => {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  tooltip="治療師驗證"
+                  tooltip="治療師管理"
                   className={
-                    isActive("/admin/verification") ? "bg-gray-200" : ""
+                    isActive("/admin/therapists") ? "bg-gray-200" : ""
                   }
                 >
-                  <a href="/admin/verification">
-                    <CheckCircle />
-                    <span>治療師驗證</span>
+                  <a href="/admin/therapists">
+                    <UserCheck />
+                    <span>治療師管理</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>

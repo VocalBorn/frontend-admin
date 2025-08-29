@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AudioUpload } from "@/components/ui/audio-upload";
 import type { SentenceResponse, SentenceCreate, SentenceUpdate, SpeakerRole } from "@/lib/sentences-api";
 
 interface SentenceDialogProps {
@@ -13,6 +14,7 @@ interface SentenceDialogProps {
   onSubmit: (data: SentenceCreate | SentenceUpdate) => Promise<void>;
   sentence?: SentenceResponse;
   mode: "create" | "edit";
+  onAudioUpload?: () => void;
 }
 
 export function SentenceDialog({
@@ -21,6 +23,7 @@ export function SentenceDialog({
   onSubmit,
   sentence,
   mode,
+  onAudioUpload,
 }: SentenceDialogProps) {
   const [formData, setFormData] = useState<Partial<SentenceCreate & SentenceUpdate>>({
     sentence_name: "",
@@ -144,11 +147,11 @@ export function SentenceDialog({
                   type="number"
                   step="0.1"
                   min="0"
-                  value={formData.start_time || ""}
+                  value={formData.start_time !== undefined ? formData.start_time.toString() : ""}
                   onChange={(e) =>
                     setFormData({ 
                       ...formData, 
-                      start_time: e.target.value ? parseFloat(e.target.value) : undefined 
+                      start_time: e.target.value !== "" ? parseFloat(e.target.value) : undefined 
                     })
                   }
                 />
@@ -161,16 +164,34 @@ export function SentenceDialog({
                   type="number"
                   step="0.1"
                   min="0"
-                  value={formData.end_time || ""}
+                  value={formData.end_time !== undefined ? formData.end_time.toString() : ""}
                   onChange={(e) =>
                     setFormData({ 
                       ...formData, 
-                      end_time: e.target.value ? parseFloat(e.target.value) : undefined 
+                      end_time: e.target.value !== "" ? parseFloat(e.target.value) : undefined 
                     })
                   }
                 />
               </div>
             </div>
+
+            {/* 音訊上傳區域 - 只在編輯模式且有句子ID時顯示 */}
+            {mode === "edit" && sentence && (
+              <AudioUpload
+                sentenceId={sentence.sentence_id}
+                currentAudio={{
+                  path: sentence.example_audio_path,
+                  duration: sentence.example_audio_duration,
+                  size: sentence.example_file_size,
+                  contentType: sentence.example_content_type,
+                }}
+                onUploadSuccess={() => {
+                  onAudioUpload?.();
+                }}
+                onClose={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              />
+            )}
           </div>
           <DialogFooter>
             <Button
