@@ -38,7 +38,7 @@ const TherapistClientsCard = ({ therapistId, onClientUnassigned }: TherapistClie
   const handleUnassignClient = async (clientId: string) => {
     try {
       setUnassigning(clientId);
-      await therapistApi.unassignClient(clientId);
+      await therapistApi.unassignClient(therapistId, clientId);
       showSuccess('客戶指派已取消');
       // 重新載入客戶列表
       setClients(prev => prev.filter(client => client.client_id !== clientId));

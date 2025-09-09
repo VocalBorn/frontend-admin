@@ -154,9 +154,9 @@ export const useTherapistClients = () => {
     }
   };
 
-  const unassignClient = async (clientId: string) => {
+  const unassignClient = async (therapistId: string, clientId: string) => {
     try {
-      await therapistApi.unassignClient(clientId);
+      await therapistApi.unassignClient(therapistId, clientId);
       showSuccess('客戶指派已取消');
       await fetchClients();
     } catch (error) {

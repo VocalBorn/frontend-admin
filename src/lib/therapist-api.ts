@@ -133,8 +133,8 @@ export const therapistApi = {
     return response.data;
   },
 
-  // 取消客戶指派
-  unassignClient: async (clientId: string): Promise<void> => {
-    await api.delete(`/therapist/unassign-client/${clientId}`);
+  // 取消客戶指派 (管理員功能)
+  unassignClient: async (therapistId: string, clientId: string): Promise<void> => {
+    await api.delete(`/therapist/unassign-client/${therapistId}/${clientId}`);
   },
 };
